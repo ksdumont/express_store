@@ -73,13 +73,31 @@ app.post('/user', (req, res) => {
         newsLetter
     };
     users.push(newUser);
+
+    res.status(201).location(`http://localhost:8000/user/${id}`)
+    .json(newUser);
     
     res.send('All validation passed');
 });
 
-app.get('/', (req, res) => {
-    res.send('A GET Request')
-})
+app.delete('/user/:userId', (req, res) => {
+    const {userId} = req.params;
+
+    const index = users.findIndex(u => u.id === userId);
+
+    // make sure we actually find a user with that id
+    if (index === -1) {
+        return res.status(404).send('User not found');
+    }
+    users.splice(index, 1);
+
+    res.status(204)
+    .end();
+});
+
+app.get('/user', (req, res) => {
+    res.json(users);
+});
 
 app.use(function errorHandler(error, req, res, next) {
     let response;
